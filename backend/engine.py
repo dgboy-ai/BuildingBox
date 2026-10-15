@@ -65,6 +65,18 @@ def get_trekkers():
     return copy.deepcopy(_state["trekkers"])
 
 
+def public_trekker(e: dict) -> dict:
+    """Trekker view with both backend names and the React table's key names.
+    Unknowns stay None (UI renders 'Unknown')."""
+    base = {k: e[k] for k in ("id", "name", "sector", "last_ping", "hours_stale",
+                              "urgency", "confidence", "unknown", "flags") if k in e}
+    base["ping"] = e.get("last_ping")
+    base["hours_elapsed"] = e.get("hours_stale")
+    base["battery_pct"] = e.get("battery")
+    base["health"] = e.get("injury")
+    return base
+
+
 def _to_min(t: str) -> int:
     # "07:15" or "11:55 AM" (PM handled: +12h unless 12 PM)
     u = t.strip().upper()
@@ -209,11 +221,17 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
         ulo = min(m["urgency"]["low"] for m in members)
         uhi = max(m["urgency"]["high"] for m in members)
         umid = sc["umid"]
+        miss = []
+        for m in members:
+            for f in m["unknown"]:
+                miss.append(f"{m['id']} {f} unknown")
         ranked_actions.append({
             "rank": a["rank"], "sector": a["sector"],
             "targets": a["targets"], "trekker_ids": a["targets"],
             "team": a["team"], "team_id": a["team"],
             "medkit": a["medkit"], "medical_kit_assigned": a["medkit"],
+            "kit_assigned": a["medkit"],
+            "missing": miss, "missing_information": miss,
             "eta_min": a["eta_min"], "text": a["text"], "why": a["why"],
             "score": a["score"], "decision_score": a["score"],
             "urgency_low": ulo, "urgency_high": uhi, "urgency_mid": umid,
@@ -237,9 +255,8 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
             "resources": {"available_teams": teams, "medical_kits": medkits,
                           "teams": teams, "medkits": medkits, "daylight_min": DAYLIGHT_MIN,
                           "spare_teams": spare},
-            "trekkers": [{k: e[k] for k in ("id", "name", "sector", "last_ping", "hours_stale",
-                                            "urgency", "confidence", "unknown", "flags") if k in e}
-                          for e in enriched],
+            "trekkers": [public_trekker(e) for e in enriched],
+            "records": [public_trekker(e) for e in enriched],
             "actions": actions, "ranked_actions": ranked_actions, "ranked": ranked_actions,
             "unassigned": unassigned,
             "next_best_question": nbq, "changes": changes}

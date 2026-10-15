@@ -49,7 +49,8 @@ def health():
 
 @app.get("/api/mission")
 def mission():
-    trekkers = engine.get_trekkers()
+    trekkers = [{**t, "hours_stale": engine.hours_stale(t["last_ping"])} for t in engine.get_trekkers()]
+    trekkers = [engine.public_trekker(t) for t in trekkers]
     return {"now": engine.REF_DEFAULT, "reference_time": engine.REF_DEFAULT,
             "trekkers": trekkers, "records": trekkers,
             "mission": {"records": trekkers},
