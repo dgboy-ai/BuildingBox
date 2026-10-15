@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SignalFuse — fallback console</title>
+<style>body{font-family:system-ui;margin:16px;max-width:900px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px;text-align:left}.hi{background:#fee}.ok{background:#efe}button,select{margin:4px;padding:6px 10px}#err{color:#b00;font-weight:bold}</style>
+</head><body>
+<h2>SignalFuse fallback (works if React is down)</h2>
+<div id="err"></div>
+<label>Weather <select id="w"><option>clear</option><option selected>cloudy</option><option>storm</option></select></label>
+<label>Teams <select id="t"><option>3</option><option selected>4</option></select></label>
+<button onclick="plan()">Re-plan</button>
+<button onclick="storm()">Demo: storm flip</button>
+<button onclick="report()">Demo: TRK-05 report (sector change → conflict)</button>
+<button onclick="reset()">Reset</button>
+<h3>Ranked actions</h3><div id="a"></div>
+<h3>Unassigned</h3><div id="u"></div>
+<h3>Trekkers (Urgency range vs Confidence)</h3><div id="k"></div>
+<script>
+const B="";
+async function plan(){err("");const w=v("w"),t=+v("t");
+ const r=await fetch(B+"/api/plan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weather:w,available_teams:t,medical_kits:2,reference_time:"11:55 AM"})}).then(r=>r.json()).catch(e=>{err("backend down: "+e);return null});
+ if(!r)return;show(r);}
+function show(r){
+ a.innerHTML=r.actions.map(x=>`<div><b>#${x.rank} ${x.text}</b> (ETA ${x.eta_min}m, score ${x.score})<br>why: ${x.why.join("; ")}</div>`).join("")||"none";
+ u.innerHTML=(r.unassigned||[]).map(x=>`<div class="hi">${x.sector}: ${x.reason} (${(x.targets||[]).join(",")})</div>`).join("")||"none";
+ k.innerHTML="<table><tr><th>ID</th><th>Urgency</th><th>Conf</th><th>Unknown</th><th>Flags</th></tr>"+r.trekkers.map(t=>`<tr><td>${t.id}</td><td>[${t.urgency.low},${t.urgency.high}]</td><td>${t.confidence.score}</td><td>${(t.unknown||[]).join(",")||"-"}</td><td>${(t.flags||[]).join("; ")}</td></tr>`).join("")+"</table>"
+ +`<p>Next best question: <b>${r.next_best_question.text}</b></p>`;
+}
+async function storm(){document.getElementById("w").value="storm";plan();}
+async function report(){err("");await fetch(B+"/api/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({trekker_id:"TRK-05",ping_time:"11:40",battery:9,signal_bars:0,sector:"C-East",weather:v("w"),teams:+v("t"),medkits:2,ref:"11:55 AM"})}).then(r=>r.json()).then(show).catch(e=>err("backend down: "+e));}
+async function reset(){await fetch(B+"/api/reset",{method:"POST"});plan();}
+function v(id){return document.getElementById(id).value}function err(m){document.getElementById("err").innerText=m}
+const a=document.getElementById("a"),u=document.getElementById("u"),k=document.getElementById("k");plan();
+</script></body></html>

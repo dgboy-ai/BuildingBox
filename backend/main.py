@@ -1,8 +1,11 @@
 #initial Commit
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
+import os
 import engine
 
 app = FastAPI(title="SignalFuse")
@@ -73,3 +76,26 @@ def report(r: ReportReq):
 def reset():
     engine.reset_state()
     return {"ok": True}
+
+
+class LoadReq(BaseModel):
+    trekkers: list
+
+
+@app.post("/api/load")
+def load(req: LoadReq):
+    n = engine.set_trekkers(req.trekkers)
+    return {"ok": True, "loaded": n}
+
+
+_STATIC = os.path.join(os.path.dirname(__file__), "static")
+if os.path.isdir(_STATIC):
+    app.mount("/static", StaticFiles(directory=_STATIC), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def index():
+    idx = os.path.join(_STATIC, "index.html")
+    if os.path.isfile(idx):
+        return FileResponse(idx)
+    return {"service": "SignalFuse", "docs": "/docs"}

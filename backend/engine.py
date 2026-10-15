@@ -42,6 +42,23 @@ def reset_state():
     _state["reports"] = []
 
 
+def set_trekkers(trekkers: list) -> int:
+    """Replace in-memory trekkers with dashboard Sample JSON.
+    Missing keys default to None (unknown). Returns count loaded."""
+    norm = []
+    for t in trekkers:
+        norm.append({
+            "id": t.get("id"), "name": t.get("name"), "sector": t.get("sector"),
+            "last_ping": t.get("last_ping") or t.get("ping_time"),
+            "battery": t.get("battery"), "signal_bars": t.get("signal_bars"),
+            "injury": t.get("injury"), "elevation_m": t.get("elevation_m"),
+            "companion": t.get("companion"), "flags": t.get("flags") or [],
+        })
+    _state["trekkers"] = norm
+    _state["reports"] = []
+    return len(norm)
+
+
 def get_trekkers():
     return copy.deepcopy(_state["trekkers"])
 
