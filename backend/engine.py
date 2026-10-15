@@ -203,6 +203,21 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
                         "why": why, "score": sc["R"],
                         "assumptions": ["synthetic ETA", "3 km/h equiv", f"weather x{WEATHER_MULT[weather]}"]})
         team_n += 1
+    ranked_actions = []
+    for a, sc in zip(actions, [s for s in scored if s["sector"] in {x["sector"] for x in actions}]):
+        members = sc["members"]
+        ulo = min(m["urgency"]["low"] for m in members)
+        uhi = max(m["urgency"]["high"] for m in members)
+        umid = sc["umid"]
+        ranked_actions.append({
+            "rank": a["rank"], "sector": a["sector"],
+            "targets": a["targets"], "trekker_ids": a["targets"],
+            "team": a["team"], "team_id": a["team"],
+            "medkit": a["medkit"], "medical_kit_assigned": a["medkit"],
+            "eta_min": a["eta_min"], "text": a["text"], "why": a["why"],
+            "score": a["score"], "decision_score": a["score"],
+            "urgency_low": ulo, "urgency_high": uhi, "urgency_mid": umid,
+            "confidence": sc["cavg"], "assumptions": a["assumptions"]})
     # precautionary kit: if kits left and no injured unassigned, give to rank1 without kit
     if kit_left > 0:
         for a in actions:
@@ -225,7 +240,8 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
             "trekkers": [{k: e[k] for k in ("id", "name", "sector", "last_ping", "hours_stale",
                                             "urgency", "confidence", "unknown", "flags") if k in e}
                           for e in enriched],
-            "actions": actions, "unassigned": unassigned,
+            "actions": actions, "ranked_actions": ranked_actions, "ranked": ranked_actions,
+            "unassigned": unassigned,
             "next_best_question": nbq, "changes": changes}
 
 

@@ -49,7 +49,10 @@ def health():
 
 @app.get("/api/mission")
 def mission():
-    return {"now": engine.REF_DEFAULT, "trekkers": engine.get_trekkers(),
+    trekkers = engine.get_trekkers()
+    return {"now": engine.REF_DEFAULT, "reference_time": engine.REF_DEFAULT,
+            "trekkers": trekkers, "records": trekkers,
+            "mission": {"records": trekkers},
             "note": "unknown=null, never guessed"}
 
 
