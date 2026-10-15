@@ -32,6 +32,7 @@ class ReportReq(BaseModel):
     battery: Optional[int] = None
     signal_bars: Optional[int] = None
     injury: Optional[str] = None
+    report: Optional[str] = None
     weather: str = "cloudy"
     teams: int = 3
     medkits: int = 2
@@ -72,9 +73,13 @@ def report(r: ReportReq):
     teams = r.available_teams if r.available_teams is not None else r.teams
     kits = r.medical_kits if r.medical_kits is not None else r.medkits
     ref = r.reference_time if r.reference_time is not None else r.ref
-    payload = {"trekker_id": r.trekker_id, "sector": r.sector, "battery": r.battery,
-               "signal_bars": r.signal_bars, "injury": r.injury,
-               "ping_time": r.ping_time or r.last_ping}
+    if r.report == "TRK-05_SCRIPTED":
+        payload = {"trekker_id": "TRK-05", "sector": "C-East", "battery": 9,
+                   "signal_bars": 0, "injury": None, "ping_time": "11:40"}
+    else:
+        payload = {"trekker_id": r.trekker_id, "sector": r.sector, "battery": r.battery,
+                   "signal_bars": r.signal_bars, "injury": r.injury,
+                   "ping_time": r.ping_time or r.last_ping}
     return engine.apply_report(payload, r.weather, teams, kits, ref)
 
 
