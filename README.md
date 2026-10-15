@@ -1,4 +1,4 @@
-# SignalFuse — Operation: Lost Signal
+# SignalFuse — Operation: Lost Signal (Advanced track)
 
 Explainable rescue decision-support for the Incident Commander.
 Turns incomplete signals into ranked sector-actions with visible reasoning.
@@ -8,6 +8,16 @@ Heuristics only — NOT a validated SAR model.
 Six trekkers missing, pings up to 6h stale and partly contradictory,
 limited teams/kits/daylight, storm closing in. A map of pins is not enough:
 the commander needs who to send where first, why, and what changes the plan.
+
+## Features
+1. Ranked sector-actions with `why[]`, Urgency range vs Confidence, unknowns flagged.
+2. Live re-plan: weather (clear/cloudy/rain/storm) + simulated report + `/reset`.
+3. Next-best-question heuristic (bonus): highest `mid × (1−confidence)`.
+
+## Architecture
+`backend/engine.py` pure deterministic rules (no DB, in-memory + reset) →
+FastAPI `backend/main.py` (`/api/mission|/plan|/report|/reset|/load`, `/` fallback console) →
+React UI (Tejshvee, port 5173) or fallback `backend/static/index.html`. Contract: `contract/plan.sample.json`.
 
 ## Run (backend)
 Terminal 1: `cd backend && pip install -r requirements.txt && uvicorn main:app --port 8000`
@@ -22,20 +32,21 @@ Mock contract for UI: `contract/plan.sample.json` (cloudy, 4 teams, UTF-8).
 |---|---|
 | `GET /api/mission` | 6 trekkers, unknown = `null` |
 | `POST /api/plan {"weather":"storm","available_teams":4,"medical_kits":2,"reference_time":"11:55 AM"}` | ranked actions + unassigned + next_best_question |
-| `POST /api/report {"trekker_id":"TRK-05","ping_time":"11:40","battery":9,"signal_bars":0,"sector":"D-West","weather":"cloudy","teams":4,"medkits":2,"ref":"11:55 AM"}` | applies simulated report, returns full plan |
+| `POST /api/report {"trekker_id":"TRK-05","ping_time":"11:40","battery":9,"signal_bars":0,"sector":"C-East","weather":"cloudy","teams":4,"medkits":2,"ref":"11:55 AM"}` | simulated conflicting report (was D-West) → C-East now 2 trekkers, score 67.2→70.9, flag kept; returns full plan |
 | `POST /api/reset` | restores original state — run before every demo |
 | bad `trekker_id` → 404, bad `weather` → 422, never 500 |
 
 ## Assumptions (all hand-set, unvalidated)
 - Scenario clock `11:55 AM` (adjustable). Oldest ping 05:55 = 6.0h stale.
 - Resources: 4 teams demo (3 also works), 2 med kits, 240 min daylight.
-- Synthetic travel: A-South 20, B-North 25, C-East 35, D-West 45 min × weather 1.0/1.25/1.6.
+- Synthetic travel: A-South 20, B-North 25, C-East 35, D-West 45 min × weather 1.0/1.25/1.4/1.6.
 - Safe approach limit 60 min; feasibility `P=100×(1−ETA/90)`.
-- Urgency base 35: minor +15 / serious +30, batt ≤15 +20 / ≤30 +12 / ≤50 +5, signal ≤1 +10 / 2 bars +5, +3/stale-hr cap 15, cloudy +5 / storm +15. Unknown adds +20 health/+10 batt/+10 signal to the high end (range, never hidden).
+- Urgency base 35: minor +15 / serious +30, batt ≤15 +20 / ≤30 +12 / ≤50 +5, signal ≤1 +10 / 2 bars +5, +3/stale-hr cap 15, cloudy +5 / rain +6 / storm +15. Unknown adds +20 health/+10 batt/+10 signal to the high end (range, never hidden).
 - Confidence `0.35F+0.25S+0.20G+0.20D`; rank `0.6U+0.2(100−C)+0.2P`, +6 for shared sector. Sector U = max member midpoint, C = average.
 - Kits: injured clusters first (only TRK-01 reported), 2nd kit labelled precautionary.
 - TRK-01 companion reported; identity as TRK-02 is assumed, not proven. All other missing fields are `null`.
-- Demo order: Clear (D-West assigned) → Storm (D-West unsafe, ETA 72>60) → Reset → Report TRK-05 in cloudy (urgency low rises, confidence rises, rank holds — frame as "now actionable", not "higher rank").
+- Demo order (rehearse exactly): Reset → Clear/4 teams (D-West assigned #4) → Storm (D-West unsafe ETA72>60) → Reset → Report TRK-05→C-East in cloudy (C-East now pair, 67.2→70.9, conflict flag) → Reset before judges.
+- Conflict honesty: report overwrites current sector; old sector survives only as flag text `was X, now Y`. No dual-location tracking.
 
 ## Real vs mock
 Real: scoring, ETA, dispatch, NBQ heuristic, API, reset, 4 tests.
@@ -43,4 +54,10 @@ Mock: trekker nulls, distances, multipliers, weights, clock, teams/kits, sample 
 
 ## Limitations
 No database by design (isolated state layer, `/reset` restores). No real coordinates.
-PM times not parsed (AM-only scenario). Daylight total not enforced in dispatch (only per-sector 60-min rule). Weights not calibrated. Prototype only.
+PM times handled (+12h). Daylight total not enforced in dispatch (only per-sector 60-min rule). Weights not calibrated. Prototype only.
+
+## Edge cases
+- Unknown `trekker_id` → 404, bad `weather` → 422, never 500 (except promptly fixed).
+- `/api/load` missing `id`/`last_ping` → 422.
+- `teams: 0` → all unassigned, no crash. `spare_teams` reports idle teams.
+- Backend down → fallback page shows error banner, React must show its own.
