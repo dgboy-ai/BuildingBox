@@ -42,30 +42,32 @@ export default function ActionCard({ a, selected, onSelect }) {
       {/* Metrics Row: Urgency, Confidence, Score, ETA */}
       <div className="mt-3.5 grid grid-cols-4 gap-2 items-center text-center py-2 px-1 rounded-lg bg-[#FAF7F2] border border-[#EFE8DD]">
         {/* Urgency */}
-        <div className="text-left px-1.5">
-          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">Urgency</div>
+        <div className="text-left px-1.5" title="How fast this sector needs help: injury + dying battery + weak signal + stale ping + bad weather. Range = known risks → worst case if the unknowns are bad. Hand-set heuristic, not medical risk.">
+          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">Urgency ⓘ</div>
           <div className="font-bold font-mono text-[13px] text-[#1E2E27]">
             {a.urgency_low}–{a.urgency_high}
           </div>
           <div className="mt-1">
             <UrgencyBar value={a.urgency_mid} />
           </div>
+          <div className="text-[8.5px] text-stone-400 leading-tight mt-0.5">need for help</div>
         </div>
 
         {/* Confidence */}
-        <div className="text-left px-1.5 border-l border-[#E6DECة border-[#E6DED2]">
-          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">Confidence</div>
+        <div className="text-left px-1.5 border-l border-[#E6DED2]" title="How much we trust the evidence: fresh ping + known sector + signal + complete fields. Low means stale or missing data — never means safe.">
+          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">Confidence ⓘ</div>
           <div className="font-bold font-mono text-[13px] text-[#1E2E27]">
             {a.confidence}%
           </div>
           <div className="mt-1">
             <ConfidenceBar value={a.confidence} />
           </div>
+          <div className="text-[8.5px] text-stone-400 leading-tight mt-0.5">trust in data</div>
         </div>
 
         {/* Score */}
-        <div className="px-1 border-l border-[#E6DED2]">
-          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">Score</div>
+        <div className="px-1 border-l border-[#E6DED2]" title="Final rank score = 60% urgency + 20% uncertainty + 20% feasibility. Heuristic that decides the order.">
+          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono" title="Final rank score = 60% urgency + 20% uncertainty + 20% feasibility. Heuristic that decides the order.">Score ⓘ</div>
           <div className="font-extrabold font-mono text-[14px] text-[#1E2E27]">
             {a.decision_score}
           </div>
@@ -84,8 +86,8 @@ export default function ActionCard({ a, selected, onSelect }) {
         </div>
 
         {/* ETA */}
-        <div className="px-1 border-l border-[#E6DED2]">
-          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">ETA</div>
+        <div className="px-1 border-l border-[#E6DED2]" title="Synthetic walk time from base camp × weather multiplier. Over 60 min = unsafe to send. Not a real measured route.">
+          <div className="text-[10px] font-bold tracking-wider text-stone-500 uppercase font-mono">ETA ⓘ</div>
           <div className="font-extrabold font-mono text-[14px] text-[#1E2E27]">
             {a.eta_min}m
           </div>
