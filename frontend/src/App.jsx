@@ -419,7 +419,7 @@ export default function App() {
                   </h2>
                 </div>
                 <p className="text-xs text-stone-500 font-medium mt-0.5">
-                  AI-assisted prioritization based on urgency, evidence confidence, ETA and resource constraints
+                  Rule-based prioritization based on urgency, evidence confidence, ETA and resource constraints
                 </p>
               </div>
 

@@ -50,7 +50,7 @@ export default function ActionCard({ a, selected, onSelect }) {
           <div className="mt-1">
             <UrgencyBar value={a.urgency_mid} />
           </div>
-          <div className="text-[8.5px] text-stone-400 leading-tight mt-0.5">need for help</div>
+          <div className="text-[11px] font-extrabold text-[#E5733A] leading-tight mt-1">higher = help first</div>
         </div>
 
         {/* Confidence */}
@@ -62,7 +62,7 @@ export default function ActionCard({ a, selected, onSelect }) {
           <div className="mt-1">
             <ConfidenceBar value={a.confidence} />
           </div>
-          <div className="text-[8.5px] text-stone-400 leading-tight mt-0.5">trust in data</div>
+          <div className="text-[11px] font-extrabold text-[#2B82C9] leading-tight mt-1">higher = trusted data</div>
         </div>
 
         {/* Score */}
@@ -71,6 +71,7 @@ export default function ActionCard({ a, selected, onSelect }) {
           <div className="font-extrabold font-mono text-[14px] text-[#1E2E27]">
             {a.decision_score}
           </div>
+          <div className="text-[11px] font-extrabold text-stone-700 leading-tight mt-0.5">higher = go first</div>
           <div className="text-[9.5px] font-bold font-mono text-stone-500 mt-0.5">
             {a.kit_assigned ? (
               <span className="text-[#D97732] flex items-center justify-center gap-0.5">
@@ -91,8 +92,8 @@ export default function ActionCard({ a, selected, onSelect }) {
           <div className="font-extrabold font-mono text-[14px] text-[#1E2E27]">
             {a.eta_min}m
           </div>
-          <div className="text-[9.5px] font-mono text-stone-400 mt-0.5">
-            Est.
+          <div className="text-[11px] font-extrabold text-stone-700 leading-tight mt-0.5">
+            walk × weather
           </div>
         </div>
       </div>
