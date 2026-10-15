@@ -1,0 +1,289 @@
+{
+  "reference_time": "11:55 AM",
+  "now": "11:55 AM",
+  "weather": "cloudy",
+  "resources": {
+    "available_teams": 4,
+    "medical_kits": 2,
+    "teams": 4,
+    "medkits": 2,
+    "daylight_min": 240
+  },
+  "trekkers": [
+    {
+      "id": "TRK-01",
+      "name": "Aarav Sharma",
+      "sector": "B-North",
+      "last_ping": "07:15",
+      "hours_stale": 4.67,
+      "urgency": {
+        "low": 99,
+        "high": 99,
+        "factors": [
+          "base 35",
+          "minor injury +15",
+          "battery 14% +20",
+          "signal 1 bar +10",
+          "stale 4.67h +14",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 59,
+        "factors": [
+          "ping 4.67h old",
+          "5/5 fields known",
+          "weak signal"
+        ]
+      },
+      "unknown": [],
+      "flags": [
+        "ankle injury",
+        "companion reported but identity unknown (TRK-02 proximity assumed, not proven)"
+      ]
+    },
+    {
+      "id": "TRK-02",
+      "name": "Maya Patel",
+      "sector": "B-North",
+      "last_ping": "07:18",
+      "hours_stale": 4.62,
+      "urgency": {
+        "low": 54,
+        "high": 94,
+        "factors": [
+          "base 35",
+          "stale 4.62h +14",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 44,
+        "factors": [
+          "ping 4.62h old",
+          "2/5 fields known"
+        ]
+      },
+      "unknown": [
+        "battery",
+        "signal_bars",
+        "injury"
+      ],
+      "flags": []
+    },
+    {
+      "id": "TRK-03",
+      "name": "Rohan Varma",
+      "sector": "C-East",
+      "last_ping": "06:40",
+      "hours_stale": 5.25,
+      "urgency": {
+        "low": 55,
+        "high": 95,
+        "factors": [
+          "base 35",
+          "stale 5.25h +15",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 40,
+        "factors": [
+          "ping 5.25h old",
+          "2/5 fields known"
+        ]
+      },
+      "unknown": [
+        "battery",
+        "signal_bars",
+        "injury"
+      ],
+      "flags": []
+    },
+    {
+      "id": "TRK-04",
+      "name": "Ananya Sen",
+      "sector": "A-South",
+      "last_ping": "08:05",
+      "hours_stale": 3.83,
+      "urgency": {
+        "low": 51,
+        "high": 91,
+        "factors": [
+          "base 35",
+          "stale 3.83h +11",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 48,
+        "factors": [
+          "ping 3.83h old",
+          "2/5 fields known"
+        ]
+      },
+      "unknown": [
+        "battery",
+        "signal_bars",
+        "injury"
+      ],
+      "flags": []
+    },
+    {
+      "id": "TRK-05",
+      "name": "Vikram Malhotra",
+      "sector": "D-West",
+      "last_ping": "05:55",
+      "hours_stale": 6.0,
+      "urgency": {
+        "low": 55,
+        "high": 95,
+        "factors": [
+          "base 35",
+          "stale 6.0h +15",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 36,
+        "factors": [
+          "ping 6.0h old",
+          "2/5 fields known"
+        ]
+      },
+      "unknown": [
+        "battery",
+        "signal_bars",
+        "injury"
+      ],
+      "flags": []
+    },
+    {
+      "id": "TRK-06",
+      "name": "Dr. Priyamvada Iyer",
+      "sector": "A-South",
+      "last_ping": "08:12",
+      "hours_stale": 3.72,
+      "urgency": {
+        "low": 51,
+        "high": 91,
+        "factors": [
+          "base 35",
+          "stale 3.72h +11",
+          "weather cloudy +5"
+        ]
+      },
+      "confidence": {
+        "score": 48,
+        "factors": [
+          "ping 3.72h old",
+          "2/5 fields known"
+        ]
+      },
+      "unknown": [
+        "battery",
+        "signal_bars",
+        "injury"
+      ],
+      "flags": []
+    }
+  ],
+  "actions": [
+    {
+      "rank": 1,
+      "team": "T1",
+      "sector": "B-North",
+      "targets": [
+        "TRK-01",
+        "TRK-02"
+      ],
+      "medkit": true,
+      "eta_min": 31,
+      "text": "Send T1 with med kit to B-North",
+      "why": [
+        "reported injury",
+        "battery 14%",
+        "2 trekkers together",
+        "feasible ETA"
+      ],
+      "score": 82.8,
+      "assumptions": [
+        "synthetic ETA",
+        "3 km/h equiv",
+        "weather x1.25"
+      ]
+    },
+    {
+      "rank": 2,
+      "team": "T2",
+      "sector": "A-South",
+      "targets": [
+        "TRK-04",
+        "TRK-06"
+      ],
+      "medkit": true,
+      "eta_min": 25,
+      "text": "Send T2 to A-South (precautionary kit)",
+      "why": [
+        "2 trekkers together",
+        "feasible ETA"
+      ],
+      "score": 71.0,
+      "assumptions": [
+        "synthetic ETA",
+        "3 km/h equiv",
+        "weather x1.25"
+      ]
+    },
+    {
+      "rank": 3,
+      "team": "T3",
+      "sector": "C-East",
+      "targets": [
+        "TRK-03"
+      ],
+      "medkit": false,
+      "eta_min": 44,
+      "text": "Send T3 to C-East",
+      "why": [
+        "stale >5h",
+        "ETA 44 min"
+      ],
+      "score": 67.2,
+      "assumptions": [
+        "synthetic ETA",
+        "3 km/h equiv",
+        "weather x1.25"
+      ]
+    },
+    {
+      "rank": 4,
+      "team": "T4",
+      "sector": "D-West",
+      "targets": [
+        "TRK-05"
+      ],
+      "medkit": false,
+      "eta_min": 56,
+      "text": "Send T4 to D-West",
+      "why": [
+        "stale >5h",
+        "ETA 56 min"
+      ],
+      "score": 65.4,
+      "assumptions": [
+        "synthetic ETA",
+        "3 km/h equiv",
+        "weather x1.25"
+      ]
+    }
+  ],
+  "unassigned": [],
+  "next_best_question": {
+    "target": "TRK-05",
+    "text": "Ask ranger for D-West log: TRK-05 battery unknown"
+  },
+  "changes": [
+    "weather=cloudy eta x1.25"
+  ]
+}
