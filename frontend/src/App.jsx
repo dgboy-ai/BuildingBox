@@ -8,9 +8,9 @@ import EvidenceTable from './components/EvidenceTable.jsx';
 import { fmt, UrgencyBar, ConfidenceBar, StatusPill } from './components/sfBadges.jsx';
 
 const WEATHERS = [
-  { id: 'clear', label: 'Clear', mult: '×1.0', icon: '☀' },
-  { id: 'cloudy', label: 'Cloudy', mult: '×1.25', icon: '☁' },
-  { id: 'storm', label: 'Storm', mult: '×1.6', icon: '⛈' }
+  { id: 'clear', label: 'Clear', mult: '×1.0', icon: '☀', hint: 'baseline speed' },
+  { id: 'cloudy', label: 'Cloudy', mult: '×1.25', icon: '☁', hint: '+25% travel time' },
+  { id: 'storm', label: 'Storm', mult: '×1.6', icon: '⛈', hint: 'D-West turns unsafe' }
 ];
 
 function normalizePlan(raw, weather, missionRef) {
@@ -354,15 +354,19 @@ export default function App() {
                     key={w.id}
                     onClick={() => changeWeather(w.id)}
                     disabled={working}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    title={w.id === 'clear' ? 'Good conditions: baseline travel times, all sectors reachable' : w.id === 'cloudy' ? 'Current weather: every approach 25% slower' : 'Storm hits: approaches 60% slower, D-West exceeds the 60-min safety cap'}
+                    className={`flex flex-col items-start gap-0.5 px-4 py-2 rounded-xl text-sm font-extrabold transition-all border-2 ${
                       weather === w.id
-                        ? 'bg-[#244638] text-white shadow-sm'
-                        : 'bg-[#FAF7F2] text-stone-700 hover:bg-[#EFE8DD] border border-[#E4DCD0]'
+                        ? 'bg-[#244638] text-white shadow-md border-[#244638]'
+                        : 'bg-[#FAF7F2] text-stone-800 hover:bg-[#EFE8DD] border-[#E4DCD0]'
                     }`}
                   >
-                    <span>{w.icon}</span>
-                    <span>{w.label}</span>
-                    <span className="font-mono text-[10px] opacity-80">{w.mult}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-base">{w.icon}</span>
+                      <span>{w.label}</span>
+                      <span className="font-mono text-[11px] opacity-80">{w.mult}</span>
+                    </span>
+                    <span className={`text-[10px] font-semibold ${weather === w.id ? 'text-[#E5A87B]' : 'text-stone-500'}`}>{w.hint}</span>
                   </button>
                 ))}
               </div>
