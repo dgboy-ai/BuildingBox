@@ -15,6 +15,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'sectors',
       label: 'Ranked Sectors',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
@@ -26,6 +27,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'evidence',
       label: 'Mission Evidence',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -39,6 +41,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'replanning',
       label: 'Live Replanning',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="23 4 23 10 17 10" />
@@ -49,6 +52,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'insights',
       label: 'Decision Insights',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <line x1="18" y1="20" x2="18" y2="10" />
@@ -60,6 +64,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'resources',
       label: 'Resources & Teams',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -72,6 +77,7 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
     {
       id: 'status',
       label: 'System Status',
+      soon: true,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
@@ -106,20 +112,30 @@ export default function Sidebar({ currentSection, onSelectSection, isMobileOpen,
             return (
               <button
                 key={item.id}
+                disabled={!!item.soon}
                 onClick={() => {
+                  if (item.soon) return;
                   onSelectSection(item.id);
                   if (onCloseMobile) onCloseMobile();
                 }}
+                title={item.soon ? 'Coming soon — everything lives on Overview for the demo' : undefined}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-all ${
                   isActive
                     ? 'bg-white text-[#244638] shadow-sm font-semibold'
+                    : item.soon
+                    ? 'text-[#7d9a8d] cursor-not-allowed opacity-80'
                     : 'text-[#D3E3DA] hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <span className={isActive ? 'text-[#244638]' : 'text-[#A6C3B6]'}>
                   {item.icon}
                 </span>
-                <span>{item.label}</span>
+                <span className="flex-1 text-left">{item.label}</span>
+                {item.soon && (
+                  <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-white/10 text-[#E5A87B] border border-white/10">
+                    Soon
+                  </span>
+                )}
               </button>
             );
           })}
