@@ -339,8 +339,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* Weather & Mission Control Buttons */}
-            <div className="xl:col-span-6 bg-white rounded-xl p-3 border border-[#E4DCD0] shadow-sm flex flex-wrap items-center justify-between gap-3">
+            {/* Weather & Mission Control Buttons — LIVE INPUTS: every control replans via backend */}
+            <div className="xl:col-span-6 bg-white rounded-xl p-3 border-2 border-[#D97732] shadow-sm flex flex-wrap items-center justify-between gap-3 relative">
+              <span className="absolute -top-2.5 left-3 px-2 py-0.5 rounded-md bg-[#D97732] text-white text-[9px] font-extrabold tracking-widest uppercase">
+                ● Live inputs — click to replan
+              </span>
               {/* Weather conditions buttons */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-bold font-mono text-stone-500 uppercase tracking-wider mr-1">
