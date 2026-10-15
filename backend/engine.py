@@ -251,6 +251,30 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
            "text": f"Ask ranger for {best['sector']} log: {best['id']} {nbq_field} unknown"}
     changes = [f"weather={weather} eta x{WEATHER_MULT.get(weather,1.0)}"]
     spare = max(0, teams - len(actions))
+    assigned_sectors = {x["sector"] for x in actions}
+    for pos, sc in enumerate(scored, start=1):
+        if sc["sector"] in assigned_sectors:
+            continue
+        reason = next((u["reason"] for u in unassigned if u["sector"] == sc["sector"]),
+                      "no team left")
+        members = sc["members"]
+        ulo = min(m["urgency"]["low"] for m in members)
+        uhi = max(m["urgency"]["high"] for m in members)
+        ids = [m["id"] for m in members]
+        miss = [f"{m['id']} {f} unknown" for m in members for f in m["unknown"]]
+        ranked_actions.append({
+            "rank": pos, "sector": sc["sector"],
+            "targets": ids, "trekker_ids": ids,
+            "team": None, "team_id": None,
+            "assigned": False, "unassigned_reason": reason,
+            "medkit": False, "medical_kit_assigned": False, "kit_assigned": False,
+            "eta_min": sc["eta"], "text": f"{sc['sector']} — unassigned ({reason})",
+            "why": [reason], "score": sc["R"], "decision_score": sc["R"],
+            "urgency_low": ulo, "urgency_high": uhi, "urgency_mid": sc["umid"],
+            "confidence": sc["cavg"],
+            "missing": miss, "missing_information": miss,
+            "assumptions": ["synthetic ETA", "3 km/h equiv", f"weather x{WEATHER_MULT[weather]}"]})
+    ranked_actions.sort(key=lambda a: (a["rank"] if isinstance(a["rank"], int) else 99))
     return {"reference_time": ref, "now": ref, "weather": weather,
             "resources": {"available_teams": teams, "medical_kits": medkits,
                           "teams": teams, "medkits": medkits, "daylight_min": DAYLIGHT_MIN,
