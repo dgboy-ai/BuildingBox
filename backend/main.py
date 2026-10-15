@@ -36,6 +36,9 @@ class ReportReq(BaseModel):
     teams: int = 3
     medkits: int = 2
     ref: str = "11:55 AM"
+    available_teams: Optional[int] = None
+    medical_kits: Optional[int] = None
+    reference_time: Optional[str] = None
 
 
 @app.get("/health")
@@ -55,7 +58,7 @@ def plan(r: PlanReq):
     kits = r.medical_kits if r.medical_kits is not None else r.medkits
     ref = r.reference_time if r.reference_time is not None else r.ref
     if r.weather not in engine.WEATHER_MULT:
-        raise HTTPException(422, f"invalid weather '{r.weather}', use clear|cloudy|storm")
+        raise HTTPException(422, f"invalid weather '{r.weather}', use clear|cloudy|rain|storm")
     return engine.build_plan(r.weather, teams, kits, ref)
 
 
@@ -65,11 +68,14 @@ def report(r: ReportReq):
     if r.trekker_id not in known:
         raise HTTPException(404, f"unknown trekker_id '{r.trekker_id}'")
     if r.weather not in engine.WEATHER_MULT:
-        raise HTTPException(422, f"invalid weather '{r.weather}', use clear|cloudy|storm")
+        raise HTTPException(422, f"invalid weather '{r.weather}', use clear|cloudy|rain|storm")
+    teams = r.available_teams if r.available_teams is not None else r.teams
+    kits = r.medical_kits if r.medical_kits is not None else r.medkits
+    ref = r.reference_time if r.reference_time is not None else r.ref
     payload = {"trekker_id": r.trekker_id, "sector": r.sector, "battery": r.battery,
                "signal_bars": r.signal_bars, "injury": r.injury,
                "ping_time": r.ping_time or r.last_ping}
-    return engine.apply_report(payload, r.weather, r.teams, r.medkits, r.ref)
+    return engine.apply_report(payload, r.weather, teams, kits, ref)
 
 
 @app.post("/api/reset")
@@ -84,7 +90,10 @@ class LoadReq(BaseModel):
 
 @app.post("/api/load")
 def load(req: LoadReq):
-    n = engine.set_trekkers(req.trekkers)
+    try:
+        n = engine.set_trekkers(req.trekkers)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
     return {"ok": True, "loaded": n}
 
 

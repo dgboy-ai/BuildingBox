@@ -4,8 +4,9 @@
 <style>body{font-family:system-ui;margin:16px;max-width:900px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px;text-align:left}.hi{background:#fee}.ok{background:#efe}button,select{margin:4px;padding:6px 10px}#err{color:#b00;font-weight:bold}</style>
 </head><body>
 <h2>SignalFuse fallback (works if React is down)</h2>
+<p>Scenario clock: <b>11:55 AM</b> (simulated, adjustable via API). Oldest ping 05:55 = 6.0h stale.</p>
 <div id="err"></div>
-<label>Weather <select id="w"><option>clear</option><option selected>cloudy</option><option>storm</option></select></label>
+<label>Weather <select id="w"><option>clear</option><option selected>cloudy</option><option>rain</option><option>storm</option></select></label>
 <label>Teams <select id="t"><option>3</option><option selected>4</option></select></label>
 <button onclick="plan()">Re-plan</button>
 <button onclick="storm()">Demo: storm flip</button>

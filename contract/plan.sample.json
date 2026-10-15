@@ -7,7 +7,8 @@
     "medical_kits": 2,
     "teams": 4,
     "medkits": 2,
-    "daylight_min": 240
+    "daylight_min": 240,
+    "spare_teams": 0
   },
   "trekkers": [
     {

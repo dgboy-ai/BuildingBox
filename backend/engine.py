@@ -9,8 +9,8 @@ SAFE_LIMIT_MIN = 60
 FEAS_DENOM = 90.0
 
 BASE_ETA = {"A-South": 20, "B-North": 25, "C-East": 35, "D-West": 45}
-WEATHER_MULT = {"clear": 1.0, "cloudy": 1.25, "storm": 1.6}
-WEATHER_URG = {"clear": 0, "cloudy": 5, "storm": 15}
+WEATHER_MULT = {"clear": 1.0, "cloudy": 1.25, "rain": 1.4, "storm": 1.6}
+WEATHER_URG = {"clear": 0, "cloudy": 5, "rain": 6, "storm": 15}
 
 INITIAL_TREKKERS = [
     {"id": "TRK-01", "name": "Aarav Sharma", "sector": "B-North",
@@ -46,7 +46,9 @@ def set_trekkers(trekkers: list) -> int:
     """Replace in-memory trekkers with dashboard Sample JSON.
     Missing keys default to None (unknown). Returns count loaded."""
     norm = []
-    for t in trekkers:
+    for i, t in enumerate(trekkers):
+        if not t.get("id") or not (t.get("last_ping") or t.get("ping_time")):
+            raise ValueError(f"row {i}: 'id' and 'last_ping' are required")
         norm.append({
             "id": t.get("id"), "name": t.get("name"), "sector": t.get("sector"),
             "last_ping": t.get("last_ping") or t.get("ping_time"),
@@ -64,10 +66,15 @@ def get_trekkers():
 
 
 def _to_min(t: str) -> int:
-    # "07:15" or "11:55 AM"
-    s = t.strip().upper().replace("AM", "").replace("PM", "").strip()
+    # "07:15" or "11:55 AM" (PM handled: +12h unless 12 PM)
+    u = t.strip().upper()
+    pm = u.endswith("PM")
+    s = u.replace("AM", "").replace("PM", "").strip()
     hh, mm = s.split(":")
-    return int(hh) * 60 + int(mm)
+    h = int(hh) % 12
+    if pm:
+        h += 12
+    return h * 60 + int(mm)
 
 
 def hours_stale(ping: str, ref: str = REF_DEFAULT) -> float:
@@ -176,9 +183,6 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
                                "reason": "no team left"})
             continue
         give_kit = injured and kit_left > 0
-        if not give_kit and kit_left > 0 and team_n <= 2:
-            # precautionary second kit to highest remaining without injury
-            pass
         if give_kit:
             kit_left -= 1
         why = []
@@ -213,9 +217,11 @@ def build_plan(weather: str = "cloudy", teams: int = 3, medkits: int = 2,
     nbq = {"target": best["id"],
            "text": f"Ask ranger for {best['sector']} log: {best['id']} {nbq_field} unknown"}
     changes = [f"weather={weather} eta x{WEATHER_MULT.get(weather,1.0)}"]
+    spare = max(0, teams - len(actions))
     return {"reference_time": ref, "now": ref, "weather": weather,
             "resources": {"available_teams": teams, "medical_kits": medkits,
-                          "teams": teams, "medkits": medkits, "daylight_min": DAYLIGHT_MIN},
+                          "teams": teams, "medkits": medkits, "daylight_min": DAYLIGHT_MIN,
+                          "spare_teams": spare},
             "trekkers": [{k: e[k] for k in ("id", "name", "sector", "last_ping", "hours_stale",
                                             "urgency", "confidence", "unknown", "flags") if k in e}
                           for e in enriched],
