@@ -279,7 +279,7 @@ export default function App() {
             {/* 4 Overview Metric Cards */}
             <div className="xl:col-span-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
               {/* Trekkers */}
-              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3">
+              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3" title="Missing trekkers in this mission, from live backend records.">
                 <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] text-[#244638] flex items-center justify-center shrink-0 border border-[#EFE8DD]">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -289,14 +289,14 @@ export default function App() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">6</div>
+                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">{mission?.records?.length || 6}</div>
                   <div className="text-[11px] font-bold text-stone-700 mt-0.5">Trekkers</div>
-                  <div className="text-[10px] text-stone-400">in mission</div>
+                  <div className="text-[10px] font-bold text-[#B85D1B]">missing</div>
                 </div>
               </div>
 
               {/* Sectors */}
-              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3">
+              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3" title="Search sectors ranked below. One card each — including unassigned ones with reasons.">
                 <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] text-[#244638] flex items-center justify-center shrink-0 border border-[#EFE8DD]">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -304,37 +304,37 @@ export default function App() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">4</div>
+                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">{new Set((mission?.records || []).map((r) => r.sector)).size || 4}</div>
                   <div className="text-[11px] font-bold text-stone-700 mt-0.5">Sectors</div>
-                  <div className="text-[9.5px] text-stone-400 truncate max-w-[70px]">A, B, C, D</div>
+                  <div className="text-[10px] font-bold text-stone-500">ranked below</div>
                 </div>
               </div>
 
               {/* Rescue Teams */}
-              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3">
+              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3" title="Rescue teams available. Unassigned sectors show why no team went there.">
                 <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] text-[#244638] flex items-center justify-center shrink-0 border border-[#EFE8DD]">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">3</div>
+                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">{plan?.resources?.available_teams || plan?.resources?.teams || 3}</div>
                   <div className="text-[11px] font-bold text-stone-700 mt-0.5">Rescue Teams</div>
-                  <div className="text-[10px] text-stone-400">Available</div>
+                  <div className="text-[10px] font-bold text-stone-500">{plan?.resources?.spare_teams ? `${plan.resources.spare_teams} idle` : 'all assigned'}</div>
                 </div>
               </div>
 
               {/* Medical Kits */}
-              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3">
+              <div className="bg-white rounded-xl p-3.5 border border-[#E4DCD0] shadow-sm flex items-center gap-3" title="Medical kits: injured sectors first, rest precautionary. Never over-allocated.">
                 <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] text-[#244638] flex items-center justify-center shrink-0 border border-[#EFE8DD]">
                   <svg className="w-5 h-5 text-[#244638]" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 6h-2V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-8-2h2v2h-2V4zm-1 9v-2h2v2h2v2h-2v2h-2v-2H8v-2h2z" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">2</div>
+                  <div className="text-xl font-extrabold text-[#1E2E27] font-mono leading-none">{plan?.resources?.medical_kits || plan?.resources?.medkits || 2}</div>
                   <div className="text-[11px] font-bold text-stone-700 mt-0.5">Medical Kits</div>
-                  <div className="text-[10px] text-stone-400">Available</div>
+                  <div className="text-[10px] font-bold text-[#B85D1B]">{(plan?.ranked_actions || []).filter((a) => a.medkit || a.kit_assigned).length} placed</div>
                 </div>
               </div>
             </div>
